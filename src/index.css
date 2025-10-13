@@ -122,6 +122,18 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+h1{
+  font-size: 36px;
+  font-weight: bold;
+  color: var(--color-foreground);
+}
+.title-page{
+  @apply text-2xl font-bold uppercase text-center text-foreground mb-12;
+}
+.space-section{
+  @apply my-32;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
