@@ -1,40 +1,39 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { Category, type Item } from "@/types/items";
+import { getItems } from "@/services/itemsService";
 import {
   Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { getItems } from "@/services/itemsService";
-import type { Item } from "@/types/items";
-import { Category } from "@/types/items";
 import MenuCategory from "@/components/ui/menuCategory";
-import { Heart } from "lucide-react";
 import { useFavorites } from "@/context/favouratie";
-export default function Cake() {
-  const [cakes, setCakes] = useState<Item[]>([]);
+import { Heart } from "lucide-react";
+export default function Juice() {
+  const [juice, setJuice] = useState<Item[]>([]);
   const { toggleFavorite, isFavorite } = useFavorites();
 
   useEffect(() => {
     getItems()
       .then((data) => {
-        const cakeItems = data.filter(
-          (item) => item.category === Category.Cake
+        const juiceItem = data.filter(
+          (item) => item.category === Category.Juice
         );
-        setCakes(cakeItems);
+        setJuice(juiceItem);
       })
       .catch((err) => console.error("Fetch error:", err));
   }, []);
 
   return (
     <div>
-      <h1 className="text-center text-2xl font-bold">Cakes</h1>
+      <h1 className="text-center text-2xl font-bold">Juice</h1>
       <MenuCategory />
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 place-items-center gap-4 mt-12">
-        {cakes.map((item) => (
+        {juice.map((item) => (
           <Card key={item.id} className="w-[280px] shadow-md rounded-2xl">
             <CardHeader>
               <button className="" onClick={() => toggleFavorite(item)}>
@@ -52,6 +51,8 @@ export default function Cake() {
                 className="rounded-xl mb-2 h-40 w-full object-cover"
               />
               <CardTitle>{item.name}</CardTitle>
+              <CardTitle>{item.category}</CardTitle>
+
               <CardDescription>{item.description}</CardDescription>
             </CardHeader>
 
@@ -68,9 +69,3 @@ export default function Cake() {
     </div>
   );
 }
-
-// export default function cake(){
-//   return(
-//     <div>hi iam cake page</div>
-//   )
-// }

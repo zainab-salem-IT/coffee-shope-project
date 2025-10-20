@@ -1,49 +1,75 @@
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+// src/components/MenuItem.tsx
+import React, { useEffect, useState } from "react";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import MenuCategory from "@/components/ui/menuCategory";
+import type { Item } from "@/types/items";
+import { getItems } from "@/services/itemsService";
+import { Heart } from "lucide-react";
+import { useFavorites } from "@/context/favouratie";
+import { useBuy } from "@/context/buyContext";
+import { Link } from "react-router-dom";
+export default function MenuItem() {
+  const [items, setItems] = useState<Item[]>([]);
+  const { toggleFavorite, isFavorite } = useFavorites();
 
+  useEffect(() => {
+    getItems()
+      .then(data => {
+        console.log("API data:", data);
+        setItems(data);
+      })
+      .catch(err => console.error("Fetch error:", err));
+  }, []);
 
-const items = Array(9).fill({
-  name: "Caramel Latte",
-  description: "Rich espresso with caramel flavor",
-  price: "$4.50",
-  image: "./src/images/Rectangle 40.png",
-})
-export default function Menu() {
-  return <div className="grid grid-cols-4 place-items-center gap-4"> 
-  
-  {items.map((item, index) => (
+  const { addToBuy } = useBuy();
+  return (
+    <div>
+      <h1 className="text-center">Menu</h1>
+     <MenuCategory/>
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 place-items-center gap-4 mt-12">
+        
+      {items.map((item) => (
+  <Card key={item.id} className="w-[280px] shadow-md rounded-2xl">
+    <CardHeader>
+      <button
+        className=""
+        onClick={() => toggleFavorite(item)}
+      > 
+        <Heart
+          className={`w-6 h-6 ${
+            isFavorite(item.id) ? "fill-red-500 text-red-500" : "text-gray-400"
+          }`}
+        />
+      </button>
 
-<Card key={index} className="w-[280px] shadow-md rounded-2xl">
-      <CardHeader>
+      
+      <Link to={`/menu/item/${item.id}`} state={{ item }}>
         <img 
           src={item.image} 
-          alt="Coffee" 
-          className="rounded-xl mb-2"
+          alt={item.name} 
+          className="rounded-xl mb-2 h-40 w-full object-cover"
         />
         <CardTitle>{item.name}</CardTitle>
-        <CardDescription>{item.description}</CardDescription>
-      </CardHeader>
+      </Link>
 
-      <CardContent>
-        <p className="text-lg font-semibold">{item.price}</p>
-      </CardContent>
+      <CardDescription>{item.category}</CardDescription>
+      <CardDescription>{item.description}</CardDescription>
+    </CardHeader>
 
-      <CardFooter>
-        <Button className="w-full">Order Now</Button>
-      </CardFooter>
-    </Card>
-  
-  ))};
+    <CardContent>
+      <p className="text-lg font-semibold">${item.price}</p>
+    </CardContent>
 
-  
-  
-  </div>
+    <CardFooter>
+      <Button className="w-full" onClick={() => addToBuy(item)}>
+        Order Now
+      </Button>
+    </CardFooter>
+  </Card>
+))}
+
+      </div>
+    </div>
+  );
 }
