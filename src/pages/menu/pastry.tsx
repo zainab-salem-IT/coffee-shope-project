@@ -13,11 +13,12 @@ import { Button } from "@/components/ui/button";
 import MenuCategory from "@/components/ui/menuCategory";
 import { useFavorites } from "@/context/favouratie";
 import { Heart } from "lucide-react";
+import { useBuy } from "@/context/buyContext";
+import { Link } from "react-router-dom";
 export default function Pastry() {
   const [pastry, setPastry] = useState<Item[]>([]);
-    const { toggleFavorite, isFavorite } = useFavorites();
-  
-
+  const { toggleFavorite, isFavorite } = useFavorites();
+  const [loading, setLoading] = useState(true)
   useEffect(() => {
     getItems()
       .then((data) => {
@@ -26,9 +27,19 @@ export default function Pastry() {
         );
         setPastry(pastryeItem);
       })
-      .catch((err) => console.error("Fetch error:", err));
+      .catch((err) => console.error("Fetch error:", err))
+      .finally(()=> setLoading(false));
   }, []);
 
+  const { addToBuy } = useBuy();
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[var(--border-primary)]"></div>
+      </div>
+    );
+  }
   return (
     <div>
       <h1 className="text-center text-2xl font-bold">Pastry</h1>
@@ -38,20 +49,22 @@ export default function Pastry() {
           <Card key={item.id} className="w-[280px] shadow-md rounded-2xl">
             <CardHeader>
               <button className="" onClick={() => toggleFavorite(item)}>
-                              <Heart
-                                className={`w-6 h-6 ${
-                                  isFavorite(item.id)
-                                    ? "fill-red-500 text-red-500"
-                                    : "text-gray-400 "
-                                }`}
-                              />
-                            </button>
-              <img
-                src={item.image}
-                alt={item.name}
-                className="rounded-xl mb-2 h-40 w-full object-cover"
-              />
-              <CardTitle>{item.name}</CardTitle>
+                <Heart
+                  className={`w-6 h-6 ${
+                    isFavorite(item.id)
+                      ? "fill-red-500 text-red-500"
+                      : "text-gray-400 "
+                  }`}
+                />
+              </button>
+              <Link to={`menu/item/${item.id}`} state={{item}}>
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="rounded-xl mb-2 h-40 w-full object-cover"
+                />
+                <CardTitle>{item.name}</CardTitle>
+              </Link>
               <CardTitle>{item.category}</CardTitle>
 
               <CardDescription>{item.description}</CardDescription>
@@ -62,7 +75,7 @@ export default function Pastry() {
             </CardContent>
 
             <CardFooter>
-              <Button className="w-full">Order Now</Button>
+              <Button className="w-full" onClick={()=> addToBuy(item)}>Order Now</Button>
             </CardFooter>
           </Card>
         ))}

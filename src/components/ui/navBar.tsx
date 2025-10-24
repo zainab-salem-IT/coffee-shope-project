@@ -14,7 +14,7 @@ import { Link } from "react-router-dom";
 
 export default function Navbar() {
   return (
-    <nav className="w-full bg-white shadow-md py-3">
+    <nav className="w-full bg-white shadow-md py-3 mb-14">
       <NavigationMenu className="mx-auto flex justify-center">
 
       <Link to="/home" className="flex items-center gap-2">

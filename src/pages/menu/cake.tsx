@@ -14,10 +14,12 @@ import { Category } from "@/types/items";
 import MenuCategory from "@/components/ui/menuCategory";
 import { Heart } from "lucide-react";
 import { useFavorites } from "@/context/favouratie";
+import { useBuy } from "@/context/buyContext";
+import { Link } from "react-router-dom";
 export default function Cake() {
   const [cakes, setCakes] = useState<Item[]>([]);
   const { toggleFavorite, isFavorite } = useFavorites();
-
+  const [loading, setLoading]= useState(true);
   useEffect(() => {
     getItems()
       .then((data) => {
@@ -26,8 +28,19 @@ export default function Cake() {
         );
         setCakes(cakeItems);
       })
-      .catch((err) => console.error("Fetch error:", err));
+      .catch((err) => console.error("Fetch error:", err))
+      .finally(()=> setLoading(false))
   }, []);
+
+  const { addToBuy } = useBuy();
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[var(--border-primary)]"></div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -46,12 +59,14 @@ export default function Cake() {
                   }`}
                 />
               </button>
-              <img
-                src={item.image}
-                alt={item.name}
-                className="rounded-xl mb-2 h-40 w-full object-cover"
-              />
-              <CardTitle>{item.name}</CardTitle>
+              <Link to={`menu/item/${item.id}`} state={{ item }}>
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="rounded-xl mb-2 h-40 w-full object-cover"
+                />
+                <CardTitle>{item.name}</CardTitle>
+              </Link>
               <CardDescription>{item.description}</CardDescription>
             </CardHeader>
 
@@ -60,7 +75,9 @@ export default function Cake() {
             </CardContent>
 
             <CardFooter>
-              <Button className="w-full">Order Now</Button>
+              <Button className="w-full" onClick={() => addToBuy(item)}>
+                Order Now
+              </Button>
             </CardFooter>
           </Card>
         ))}

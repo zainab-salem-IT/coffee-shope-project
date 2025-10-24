@@ -26,9 +26,23 @@ export const BuyProvider = ({ children }: { children: React.ReactNode }) => {
     return [];
   });
 
+  // Step 1: define the function that returns the initial value
+// function getInitialBuyList(): BuyItem[] { // this part :BuyITem mean this function will return BuyITem object
+//   if (typeof window !== "undefined") {
+//     const stored = localStorage.getItem("buyList");
+//     return stored ? JSON.parse(stored) : [];
+//   }
+//   return [];
+// }
+
+// // Step 2: use that function in useState
+// const [buyList, setBuyList] = useState<BuyItem[]>(getInitialBuyList);
+
+
   useEffect(() => {
     localStorage.setItem("buyList", JSON.stringify(buyList));
   }, [buyList]);
+
 
   const addToBuy = (item: Item) => {//function  except on arg item from type ITem , it's update bylist state
     setBuyList((prev) => {
@@ -44,6 +58,8 @@ export const BuyProvider = ({ children }: { children: React.ReactNode }) => {
       }
     });
   };
+
+
 
   const removeFromBuy = (id: number) => {
     setBuyList((prev) => prev.filter((item) => Number(item.id) !== id));

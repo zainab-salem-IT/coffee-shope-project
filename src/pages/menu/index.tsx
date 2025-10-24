@@ -12,17 +12,28 @@ import { Link } from "react-router-dom";
 export default function MenuItem() {
   const [items, setItems] = useState<Item[]>([]);
   const { toggleFavorite, isFavorite } = useFavorites();
-
+  const [loading, setLoading]= useState(true);
+  
   useEffect(() => {
     getItems()
       .then(data => {
         console.log("API data:", data);
         setItems(data);
       })
-      .catch(err => console.error("Fetch error:", err));
+      .catch(err => console.error("Fetch error:", err))
+      .finally(() => setLoading(false));
+      
   }, []);
 
   const { addToBuy } = useBuy();
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[var(--border-primary)]"></div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <h1 className="text-center">Menu</h1>
